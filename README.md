@@ -20,3 +20,9 @@ na execução do aplicativo.
 
 Tendo aberto o aplicativo é possível atualizar os dados no banco na aba de Inserção de Dados, e visualizar gráficos com dados de negociação 
 na aba Gráficos.
+
+## Versão online
+
+Como a inserção de dados é demorada, também está disponível uma versão do aplicativo em https://ogawa.shinyapps.io/fase2_shinyapps/, com 
+dados pré-carregados. Como não é simples a conexão com bancos de dados na plataforma utilizada, essa versão serve meramente para ver 
+a interface com alguns dados carregados. 
