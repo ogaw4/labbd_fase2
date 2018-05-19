@@ -69,6 +69,49 @@ CREATE TABLE relatorio_financeiro (
     data date
 );
 
+CREATE TABLE balanco_patrimonial (
+    id_relatorio int REFERENCES relatorio(id) ON DELETE CASCADE,
+	ativo_total numeric,
+	ativo_imobilizado numeric,
+	patrimonio_atribuido numeric,
+	patrimonio_liquido numeric	
+);
+
+CREATE TABLE demonstracao_de_resultado (
+    id_relatorio int REFERENCES relatorio(id) ON DELETE CASCADE,
+	receita numeric,
+	resultado_bruto numeric,
+	resultado_financeiro numeric,
+	resultado_liquido numeric,
+	resultado_equivalente numeric,
+	lucro_periodo numeric,
+	lucro_atribuido numeric
+);
+
+CREATE TABLE demonstracao_do_fluxo_de_caixa (
+    id_relatorio int REFERENCES relatorio(id) ON DELETE CASCADE,
+	ativo_operacional numeric,
+	ativo_investimento numeric,
+	ativo_financeiro numeric,
+	aumento_caixa numeric,
+	variacao_caixa numeric
+);
+
+CREATE TABLE acoes_emitidas (
+    id_relatorio int REFERENCES relatorio(id) ON DELETE CASCADE,
+	total_geral numeric,
+	ordinarias numeric,
+	pessoas_fisicas numeric,
+	pessoas_juridicas numeric
+);
+
+
+CREATE TABLE capital_social (
+    id_relatorio int REFERENCES relatorio(id) ON DELETE CASCADE,
+	ordinario numeric,
+	preferencial numeric
+);
+
 
 -- Mercadorias e índices mudam tão raramente 
 -- que não há sentido em fazer uma inserção 
