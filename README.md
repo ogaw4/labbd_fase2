@@ -8,9 +8,9 @@ Para execução e uso do aplicativo são necessários:
 - Servidor PostgreSQL
 - Servidor MongoDB
 
-Antes de utilizar o aplicativo o schema deve ser criado com o script em [criacao_sql.sql] (./criacao_sql.sql).
+Antes de utilizar o aplicativo o schema deve ser criado com o script em criacao_sql.sql.
 
-As configurações de conexão aos bancos de dados estão no arquivo [global.R] (./global.R). Para execução do aplicativo localmente recomenda-se 
+As configurações de conexão aos bancos de dados estão no arquivo global.R. Para execução do aplicativo localmente recomenda-se 
 o uso do RStudio, mas é possível executá-lo por linha de comando com:
 
 > R -e "shiny::runApp('~/shinyapp')"
