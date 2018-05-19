@@ -1,0 +1,25 @@
+.skin-blue .main-header .logo {
+  background-color: #00315d;
+}
+
+.skin-blue .main-header .logo:hover {
+  background-color: #00ae4d;
+}
+.skin-blue .main-header .navbar {
+  background-color: #004685;
+}
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+  background-color: #00ae4d;
+}
+.skin-blue .sidebar-menu > li.active > a, .skin-blue .sidebar-menu > li:hover > a{
+  border-left-color: #004685;
+}
+.btn:hover{
+  color: #000000 !important;
+}
+.dropdown:hover{
+  background-color: #00ae4d;
+}
+a.hover{
+  background-color: #ff00ff !important;
+}
