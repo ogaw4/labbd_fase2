@@ -8,7 +8,7 @@ tabItem(
   fluidRow(
     column(4, checkboxGroupInput("content_to_update", "Dados a serem atualizados:", 
                                  choices = list(`Dados de negociação e cadastros` = "neg", 
-                                                `Relatórios de empresas` = "rel")))
+                                                `Relatórios de empresas (Não implementado)` = "rel")))
   ),
   fluidRow(
     column(4, actionButton("run_update", "Baixar arquivos e atualizar banco"))
