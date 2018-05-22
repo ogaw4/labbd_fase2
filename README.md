@@ -26,3 +26,8 @@ na aba Gráficos.
 Como a inserção de dados é demorada, também está disponível uma versão do aplicativo em https://ogawa.shinyapps.io/fase2_shinyapps/, com 
 dados pré-carregados. Como não é simples a conexão com bancos de dados na plataforma utilizada, essa versão serve meramente para ver 
 a interface com alguns dados carregados. 
+
+## Memory leak
+
+O pacote XML tem um memory leak conhecido se instalado pelo CRAN (instalação automática usual) em sistemas Windows. Recomenda-se o uso de 
+outros sistemas operacionais ou instalação da biblioteca XML a partir do código fonte. 

@@ -22,6 +22,7 @@ gen_index_plot <- function(instr, dr, plot_type) {
   switch(plot_type, 
          line = {
            dd <- melt(dd, id.vars = 'Data', variable.name = 'Preço', value.name = 'Valor')
+           dd[dd == 0] <- NA
            
            p <- suppressMessages(ggplotly(ggplot(dd, aes(x = Data, y = Valor, color = `Preço`)) +
                                             geom_point() + geom_line() + ggtitle(title)))
@@ -47,6 +48,7 @@ gen_stock_plot <- function(instr, dr, plot_type) {
   switch(plot_type, 
          line = {
            dd <- melt(dd, id.vars = 'Data', variable.name = 'Preço', value.name = 'Valor')
+           dd[dd == 0] <- NA
            
            p <- suppressMessages(ggplotly(ggplot(dd %>% filter(`Preço` != 'volumeNegociado'), aes(x = Data, y = Valor, color = `Preço`)) +
                                             geom_point() + geom_line() + ggtitle(title)))
@@ -73,7 +75,8 @@ gen_option_plot <- function(instr, dr, plot_type) {
   
   switch(plot_type, 
          line = {
-           dd <- melt(dd, id.vars = 'Data')
+           dd <- melt(dd, id.vars = 'Data', variable.name = 'Preço', value.name = 'Valor')
+           dd[dd == 0] <- NA
            p <- suppressMessages(ggplotly(ggplot(dd %>% filter(`Preço` != 'volumeNegociado'), aes(x = Data, y = Valor, color = `Preço`)) +
                                             geom_point() + geom_line() + ggtitle(title)))
            
@@ -98,7 +101,8 @@ gen_future_plot <- function(instr, dr, plot_type) {
   
   switch(plot_type, 
          line = {
-           dd <- melt(dd, id.vars = 'Data')
+           dd <- melt(dd, id.vars = 'Data', variable.name = 'Preço', value.name = 'Valor')
+           dd[dd == 0] <- NA
            p <- suppressMessages(ggplotly(ggplot(dd %>% filter(`Preço` != 'volumeNegociado'), aes(x = Data, y = Valor, color = `Preço`)) +
                                             geom_point() + geom_line() + ggtitle(title)))
            
@@ -138,7 +142,8 @@ gen_candle_plot <- function(dd, title, instr_type) {
   
   plt <- ggplot(dd, aes(x = Data, group = 1,
                         text =  sprintf("Mínimo: %s<br>Máximo: %s<br>Abertura: %s<br>Fechamento: %s<br>Volume: R$ %s<br>Data: %s",
-                                        precoMinimo, precoMaximo, precoAbertura, precoFechamento, format(volumeNegociado, big.mark = ".", decimal.mark = ","), format(Data, "%Y-%m-%d"))), 
+                                        precoMinimo, precoMaximo, precoAbertura, precoFechamento,
+                                        format(volumeNegociado, big.mark = ".", decimal.mark = ","), format(Data, "%Y-%m-%d"))), 
                 alpha = 1) +
     geom_linerange(aes(ymin = precoMinimo, ymax = precoMaximo, colour = change, alpha = 1)) +
     labs(title = title) +
@@ -152,9 +157,9 @@ gen_candle_plot <- function(dd, title, instr_type) {
     ylab('Valor')
   
   if (do_volumes) plt <- plt + geom_rect(aes(xmin = Data - width/2 * 0.9, xmax = Data + width/2 * 0.9, 
-                                ymin = lower_bound, ymax = lower_bound + (volumeNegociado - min_vol) * vol_normalizer,
-                                fill = change), 
-                            alpha = 0.5) 
+                                             ymin = lower_bound, ymax = lower_bound + (volumeNegociado - min_vol) * vol_normalizer,
+                                             fill = change), 
+                                         alpha = 0.5) 
   
   if (any(dd$change == "flat")) {
     plt <- plt +
@@ -167,10 +172,10 @@ gen_candle_plot <- function(dd, title, instr_type) {
   if ('Referencia' %in% names(dd)) {
     ref_text <- ifelse(instr_type == 'option', 'Referência', 'Ajuste')
     plt <- suppressWarnings(plt + geom_line(aes(x = Data, y = Referencia), alpha = 0.5, size = 0.5) +
-      geom_point(aes(x = Data, y = Referencia, 
-                                 text = sprintf('%s: %s', 
-                                                ref_text, 
-                                                Referencia)), alpha = 0.5, size = 0.5))
+                              geom_point(aes(x = Data, y = Referencia, 
+                                             text = sprintf('%s: %s', 
+                                                            ref_text, 
+                                                            Referencia)), alpha = 0.5, size = 0.5))
   }
   
   p <- suppressMessages(ggplotly(plt, tooltip = 'text') %>% layout(showlegend = F))

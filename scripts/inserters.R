@@ -48,6 +48,7 @@ bvbg086_insert_handler <- function(fnames, data_ref, dest_dir) {
     if(!is.null(names(negs_df))) {
       negs_df <- negs_df[!is.na(negs_df$idAcao), ]
       negs_df[is.na(negs_df)] <- 0
+      if (nrow(get_stocks(negs_df[1, ]$codigoAcao, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
       negs_mon <- mongo(collection = MONGO_STOCKS, db = MONGO_DB_NAME,
                         url = MONGO_DB_URL)
       ins_res <- negs_mon$insert(negs_df)
@@ -187,6 +188,10 @@ bvbg086_insert_handler <- function(fnames, data_ref, dest_dir) {
         merge(contents) %>% 
         mutate(dc = as.numeric(as.Date(maturity) - as.Date(data_ref)), 
                du = bizdays(data_ref, maturity))
+      
+      
+      if (nrow(get_futures(futs[1, ]$cod_gts, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
+      
       
       fmongo <- mongo(collection = MONGO_FUTURES, db = MONGO_DB_NAME, url = MONGO_DB_URL)
       ins_res <- fmongo$insert(futs %>% select(data_ref, idFuturo = id_contr, 
@@ -396,6 +401,11 @@ bvbg087_insert_handler <- function(fname, data_ref, dest_dir) {
       
       idx_df <- idx_df[!is.na(idx_df$id_indice), ]
       idx_df[is.na(idx_df)] <- 0
+      if (nrow(get_index(idx_df[1, ]$ticker, from = data_ref, to = data_ref)) > 0) { 
+        stop("Dados de negociação já foram inseridos para essa data.")
+        rm(negs)
+        rm(negDoc)
+      }
       
       imongo <- mongo(collection = MONGO_INDEXES, db = MONGO_DB_NAME, url = MONGO_DB_URL)
       ins_res <- imongo$insert(idx_df %>% select(data_ref, idIndice = id_indice, 
@@ -405,6 +415,8 @@ bvbg087_insert_handler <- function(fname, data_ref, dest_dir) {
                                                  oscilacao = OSCILA))
       
       rm(ins_res)
+      rm(negs)
+      rm(negDoc)
     } else {
       stop("Erro ao inserir histórico de índices")
       return(NULL)
@@ -420,6 +432,7 @@ bvbg087_insert_handler <- function(fname, data_ref, dest_dir) {
 
 
 bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
+  
   fname <- paste(dest_dir, "/", fnames[1], sep="")
   
   if(file.exists(fname)) {
@@ -471,7 +484,8 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
     
     if(!is.null(names(opts_df))) {
       
-      opts_df <- opts_df[!is.na(opts_df$data_ref), ] %>% filter(data_vcto >= data_ref)
+      opts_df <- opts_df[!is.na(opts_df$data_ref), ] %>% filter(data_vcto >= data_ref) %>%
+        mutate(cod_opcao = paste0(cod_opcao, '_', substr(cod_opcao, 5, 5), substr(as.character(data_vcto), 3, 4)))
       opts_df$tipo_opc[opts_df$tipo_opc == "CALL"] <- "call"
       opts_df$tipo_opc[opts_df$tipo_opc == "PUTT"] <- "put"
       opts_df$tipo_instr[opts_df$tipo_instr == "AMER"] <- "americana"
@@ -482,7 +496,7 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
       names(curr_opts) <- c('cod_opcao', 'id_opcao', 'data_vcto', 'tipo_opc', 'tipo_instr', 'underlying')
       keys <- c('underlying', 'cod_opcao', 'data_vcto', 'tipo_opc', 'tipo_instr')
       new_opts <- merge(opts_df, curr_opts %>% select(cod_opcao, id_opcao), all.x=TRUE)
-      new_opts <- new_opts[ which(is.na(new_opts$id_opcao)) , c('id_acao', keys, 'strike') ] %>% filter(!(cod_opcao %in% instr$cod_opcao))
+      new_opts <- new_opts[which(is.na(new_opts$id_opcao)) , c('id_acao', keys, 'strike') ] %>% filter(!(cod_opcao %in% instr$cod_opcao))
       
       if (nrow(new_opts) > 0) {
         dbWriteTable(DB_CONNECTION, 'instrumento', new_opts %>% select(codigo = cod_opcao), append = T, row.names = F)
@@ -509,6 +523,7 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
     stop("Arquivo BVBG028 não encontrado")
     return(NULL)
   }
+  
   
   
   fname <- paste(dest_dir, "/", fnames[2], sep="")
@@ -569,6 +584,8 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
         contents$data_vcto <- as.Date(as.character(contents$data_vcto), format='%Y%m%d')
         contents$tipo_opc <- ifelse(contents$tipo_opc == "C", "call", "put")
         contents$tipo_instr <- ifelse(contents$tipo_instr == "A", "americana", "europeia")
+        contents <- contents %>%
+          mutate(cod_opcao = paste0(cod_opcao, '_', substr(cod_opcao, 5, 5), substr(as.character(data_vcto), 3, 4)))
         
       } else {
         stop("Arquivo PE (prêmio de opções de ações) não encontrado")
@@ -576,6 +593,9 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
       }
       negs_df <- negs_df %>% merge(contents) %>% mutate(dc = as.numeric(as.Date(data_vcto) - as.Date(data_ref)),
                                                         du = bizdays(data_ref, data_vcto), delta = 0)
+      
+      
+      if (nrow(get_options(negs_df[1, ]$cod_opcao, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
       
       omongo <- mongo(collection = MONGO_OPTIONS, db = MONGO_DB_NAME, url = MONGO_DB_URL)
       ins_res <- omongo$insert(negs_df %>% select(data_ref, idOpcao = id_opcao, 
