@@ -32,7 +32,11 @@ sp <- dbGetQuery(DB_CONNECTION, paste0('set search_path to ', SCHEMA_NAME, ';'))
 MONGO_DB_NAME <- 'mac439_bmfbovespa'
 MONGO_DB_URL <- 'mongodb://localhost:27017'
 
-MONGO_STOCKS <- 'Negociacao_Acao'
-MONGO_FUTURES <- 'Negociacao_Futuro'
-MONGO_OPTIONS <- 'Negociacao_Opcao'
-MONGO_INDEXES <- 'Preco_Indice'
+MONGO_STOCKS <- mongo(collection = 'Negociacao_Acao', db = MONGO_DB_NAME,
+                      url = MONGO_DB_URL )
+MONGO_FUTURES <- mongo(collection = 'Negociacao_Futuro', db = MONGO_DB_NAME,
+                       url = MONGO_DB_URL )
+MONGO_OPTIONS <- mongo(collection = 'Negociacao_Opcao', db = MONGO_DB_NAME,
+                       url = MONGO_DB_URL )
+MONGO_INDEXES <- mongo(collection = 'Preco_Indice', db = MONGO_DB_NAME,
+                       url = MONGO_DB_URL )

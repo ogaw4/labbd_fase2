@@ -1,8 +1,6 @@
 
 get_stocks <- function(ticker, from = NULL, to = NULL) {
   
-  smongo <- mongo(collection = MONGO_STOCKS, db = MONGO_DB_NAME,
-                  url = MONGO_DB_URL )
   dateq <- ''
   if (!is.null(from) && !is.null(to)) {
     dateq <- glue(', "data_ref": {{ "$lte": "{to}", "$gte": "{from}" }}')
@@ -12,8 +10,7 @@ get_stocks <- function(ticker, from = NULL, to = NULL) {
   
   query <- '{{"codigoAcao":"{ticker}"{dateq}}}'
   
-  results <- smongo$find(glue(query))
-  rm(smongo)
+  results <- MONGO_STOCKS$find(glue(query))
   
   if (nrow(results) == 0) {
     return(data.frame(idAcao = numeric(0), codigoAcao = character(0), data_ref = character(0), 
@@ -29,8 +26,6 @@ get_stocks <- function(ticker, from = NULL, to = NULL) {
 
 get_index <- function(ticker, from = NULL, to = NULL) {
   
-  smongo <- mongo(collection = MONGO_INDEXES, db = MONGO_DB_NAME,
-                  url = MONGO_DB_URL )
   dateq <- ''
   if (!is.null(from) && !is.null(to)) {
     dateq <- glue(', "data_ref": {{ "$lte": "{to}", "$gte": "{from}" }}')
@@ -40,8 +35,7 @@ get_index <- function(ticker, from = NULL, to = NULL) {
   
   query <- '{{"codigoIndice":"{ticker}"{dateq}}}'
   
-  results <- smongo$find(glue(query))
-  rm(smongo)
+  results <- MONGO_INDEXES$find(glue(query))
   
   if (nrow(results) == 0) {
     return(data.frame(idIndice = numeric(0), codigoIndice = character(0), data_ref = character(0), 
@@ -57,8 +51,6 @@ get_index <- function(ticker, from = NULL, to = NULL) {
 
 get_options <- function(ticker, from = NULL, to = NULL) {
   
-  smongo <- mongo(collection = MONGO_OPTIONS, db = MONGO_DB_NAME,
-                  url = MONGO_DB_URL )
   dateq <- ''
   if (!is.null(from) && !is.null(to)) {
     dateq <- glue(', "data_ref": {{ "$lte": "{to}", "$gte": "{from}" }}')
@@ -68,8 +60,7 @@ get_options <- function(ticker, from = NULL, to = NULL) {
   
   query <- '{{"codigoOpcao":"{ticker}"{dateq}}}'
   
-  results <- smongo$find(glue(query))
-  rm(smongo)
+  results <- MONGO_OPTIONS$find(glue(query))
   
   if (nrow(results) == 0) {
     return(data.frame(idOpcao = numeric(0), codigoOpcao = character(0), data_ref = character(0), 
@@ -87,8 +78,6 @@ get_options <- function(ticker, from = NULL, to = NULL) {
 
 get_futures <- function(ticker, from = NULL, to = NULL) {
   
-  smongo <- mongo(collection = MONGO_FUTURES, db = MONGO_DB_NAME,
-                  url = MONGO_DB_URL )
   dateq <- ''
   if (!is.null(from) && !is.null(to)) {
     dateq <- glue(', "data_ref": {{ "$lte": "{to}", "$gte": "{from}" }}')
@@ -98,8 +87,7 @@ get_futures <- function(ticker, from = NULL, to = NULL) {
   
   query <- '{{"codigoFuturo":"{ticker}"{dateq}}}'
   
-  results <- smongo$find(glue(query))
-  rm(smongo)
+  results <- MONGO_FUTURES$find(glue(query))
   
   if (nrow(results) == 0) {
     return(data.frame(idFuturo = numeric(0), codigoFuturo = character(0), data_ref = character(0), 

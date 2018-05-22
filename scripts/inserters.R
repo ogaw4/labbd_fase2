@@ -49,10 +49,7 @@ bvbg086_insert_handler <- function(fnames, data_ref, dest_dir) {
       negs_df <- negs_df[!is.na(negs_df$idAcao), ]
       negs_df[is.na(negs_df)] <- 0
       if (nrow(get_stocks(negs_df[1, ]$codigoAcao, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
-      negs_mon <- mongo(collection = MONGO_STOCKS, db = MONGO_DB_NAME,
-                        url = MONGO_DB_URL)
-      ins_res <- negs_mon$insert(negs_df)
-      rm(negs_mon)
+      ins_res <- MONGO_STOCKS$insert(negs_df)
     } else {
       stop("Erro ao inserir histórico de ações")
       return(NULL)
@@ -193,25 +190,21 @@ bvbg086_insert_handler <- function(fnames, data_ref, dest_dir) {
       if (nrow(get_futures(futs[1, ]$cod_gts, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
       
       
-      fmongo <- mongo(collection = MONGO_FUTURES, db = MONGO_DB_NAME, url = MONGO_DB_URL)
-      ins_res <- fmongo$insert(futs %>% select(data_ref, idFuturo = id_contr, 
-                                               codigoFuturo = cod_gts, precoAbertura = preco_abertura, 
-                                               precoMinimo = preco_minimo, precoMedio = preco_medio, 
-                                               precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
-                                               precoAjuste = valor_ajuste, oscilacao = oscila, 
-                                               numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
-                                               volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du))
-      rm(fmongo)
-      omongo <- mongo(collection = MONGO_OPTIONS, db = MONGO_DB_NAME, url = MONGO_DB_URL)
-      ins_res <- omongo$insert(opts %>% select(data_ref, idOpcao = id_contr, 
-                                               codigoOpcao = cod_gts, precoAbertura = preco_abertura, 
-                                               precoMinimo = preco_minimo, precoMedio = preco_medio, 
-                                               precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
-                                               oscilacao = oscila, 
-                                               numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
-                                               volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du, 
-                                               volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
-      rm(omongo)
+      ins_res <- MONGO_FUTURES$insert(futs %>% select(data_ref, idFuturo = id_contr, 
+                                                      codigoFuturo = cod_gts, precoAbertura = preco_abertura, 
+                                                      precoMinimo = preco_minimo, precoMedio = preco_medio, 
+                                                      precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
+                                                      precoAjuste = valor_ajuste, oscilacao = oscila, 
+                                                      numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
+                                                      volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du))
+      ins_res <- MONGO_OPTIONS$insert(opts %>% select(data_ref, idOpcao = id_contr, 
+                                                      codigoOpcao = cod_gts, precoAbertura = preco_abertura, 
+                                                      precoMinimo = preco_minimo, precoMedio = preco_medio, 
+                                                      precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
+                                                      oscilacao = oscila, 
+                                                      numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
+                                                      volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du, 
+                                                      volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
     } else {
       stop("Erro ao inserir histórico de futuros e opções sobre derivativos.")
       return(NULL)
@@ -407,14 +400,11 @@ bvbg087_insert_handler <- function(fname, data_ref, dest_dir) {
         rm(negDoc)
       }
       
-      imongo <- mongo(collection = MONGO_INDEXES, db = MONGO_DB_NAME, url = MONGO_DB_URL)
-      ins_res <- imongo$insert(idx_df %>% select(data_ref, idIndice = id_indice, 
-                                                 codigoIndice = ticker, precoAbertura = PREABE, 
-                                                 precoMinimo = PREMIN, precoMedio = PREMED, 
-                                                 precoMaximo = PREMAX, precoFechamento = PREULT,
-                                                 oscilacao = OSCILA))
-      
-      rm(ins_res)
+      ins_res <- MONGO_INDEXES$insert(idx_df %>% select(data_ref, idIndice = id_indice, 
+                                                        codigoIndice = ticker, precoAbertura = PREABE, 
+                                                        precoMinimo = PREMIN, precoMedio = PREMED, 
+                                                        precoMaximo = PREMAX, precoFechamento = PREULT,
+                                                        oscilacao = OSCILA))
       rm(negs)
       rm(negDoc)
     } else {
@@ -597,16 +587,14 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
       
       if (nrow(get_options(negs_df[1, ]$cod_opcao, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
       
-      omongo <- mongo(collection = MONGO_OPTIONS, db = MONGO_DB_NAME, url = MONGO_DB_URL)
-      ins_res <- omongo$insert(negs_df %>% select(data_ref, idOpcao = id_opcao, 
-                                                  codigoOpcao = cod_opcao, precoAbertura = PREABE, 
-                                                  precoMinimo = PREMIN, precoMedio = PREMED, 
-                                                  precoMaximo = PREMAX, precoFechamento = PREULT,
-                                                  oscilacao = OSCILA, 
-                                                  numeroNegocios = TOTNEG, quantidadeNegociada = QUATOT, 
-                                                  volumeNegociado = VOLTOT, diasCorridosRest = dc, diasUteisRest = du, 
-                                                  volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
-      rm(omongo)
+      ins_res <- MONGO_OPTIONS$insert(negs_df %>% select(data_ref, idOpcao = id_opcao, 
+                                                         codigoOpcao = cod_opcao, precoAbertura = PREABE, 
+                                                         precoMinimo = PREMIN, precoMedio = PREMED, 
+                                                         precoMaximo = PREMAX, precoFechamento = PREULT,
+                                                         oscilacao = OSCILA, 
+                                                         numeroNegocios = TOTNEG, quantidadeNegociada = QUATOT, 
+                                                         volumeNegociado = VOLTOT, diasCorridosRest = dc, diasUteisRest = du, 
+                                                         volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
       
     } else {
       stop("Erro ao inserir histórico de opções de ações.")
