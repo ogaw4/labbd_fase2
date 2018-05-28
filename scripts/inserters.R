@@ -191,20 +191,20 @@ bvbg086_insert_handler <- function(fnames, data_ref, dest_dir) {
       
       
       ins_res <- MONGO_FUTURES$insert(futs %>% select(data_ref, idFuturo = id_contr, 
-                                                      codigoFuturo = cod_gts, precoAbertura = preco_abertura, 
-                                                      precoMinimo = preco_minimo, precoMedio = preco_medio, 
-                                                      precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
-                                                      precoAjuste = valor_ajuste, oscilacao = oscila, 
-                                                      numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
-                                                      volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du))
+                                               codigoFuturo = cod_gts, precoAbertura = preco_abertura, 
+                                               precoMinimo = preco_minimo, precoMedio = preco_medio, 
+                                               precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
+                                               precoAjuste = valor_ajuste, oscilacao = oscila, 
+                                               numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
+                                               volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du))
       ins_res <- MONGO_OPTIONS$insert(opts %>% select(data_ref, idOpcao = id_contr, 
-                                                      codigoOpcao = cod_gts, precoAbertura = preco_abertura, 
-                                                      precoMinimo = preco_minimo, precoMedio = preco_medio, 
-                                                      precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
-                                                      oscilacao = oscila, 
-                                                      numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
-                                                      volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du, 
-                                                      volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
+                                               codigoOpcao = cod_gts, precoAbertura = preco_abertura, 
+                                               precoMinimo = preco_minimo, precoMedio = preco_medio, 
+                                               precoMaximo = preco_maximo, precoFechamento = valor_fechamento,
+                                               oscilacao = oscila, 
+                                               numeroNegocios = n_negocios, quantidadeNegociada = contratos_negociados, 
+                                               volumeNegociado = volume_reais, diasCorridosRest = dc, diasUteisRest = du, 
+                                               volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
     } else {
       stop("Erro ao inserir histórico de futuros e opções sobre derivativos.")
       return(NULL)
@@ -401,10 +401,10 @@ bvbg087_insert_handler <- function(fname, data_ref, dest_dir) {
       }
       
       ins_res <- MONGO_INDEXES$insert(idx_df %>% select(data_ref, idIndice = id_indice, 
-                                                        codigoIndice = ticker, precoAbertura = PREABE, 
-                                                        precoMinimo = PREMIN, precoMedio = PREMED, 
-                                                        precoMaximo = PREMAX, precoFechamento = PREULT,
-                                                        oscilacao = OSCILA))
+                                                 codigoIndice = ticker, precoAbertura = PREABE, 
+                                                 precoMinimo = PREMIN, precoMedio = PREMED, 
+                                                 precoMaximo = PREMAX, precoFechamento = PREULT,
+                                                 oscilacao = OSCILA))
       rm(negs)
       rm(negDoc)
     } else {
@@ -588,13 +588,13 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
       if (nrow(get_options(negs_df[1, ]$cod_opcao, from = data_ref, to = data_ref)) > 0) stop("Dados de negociação já foram inseridos para essa data.")
       
       ins_res <- MONGO_OPTIONS$insert(negs_df %>% select(data_ref, idOpcao = id_opcao, 
-                                                         codigoOpcao = cod_opcao, precoAbertura = PREABE, 
-                                                         precoMinimo = PREMIN, precoMedio = PREMED, 
-                                                         precoMaximo = PREMAX, precoFechamento = PREULT,
-                                                         oscilacao = OSCILA, 
-                                                         numeroNegocios = TOTNEG, quantidadeNegociada = QUATOT, 
-                                                         volumeNegociado = VOLTOT, diasCorridosRest = dc, diasUteisRest = du, 
-                                                         volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
+                                                  codigoOpcao = cod_opcao, precoAbertura = PREABE, 
+                                                  precoMinimo = PREMIN, precoMedio = PREMED, 
+                                                  precoMaximo = PREMAX, precoFechamento = PREULT,
+                                                  oscilacao = OSCILA, 
+                                                  numeroNegocios = TOTNEG, quantidadeNegociada = QUATOT, 
+                                                  volumeNegociado = VOLTOT, diasCorridosRest = dc, diasUteisRest = du, 
+                                                  volReferencia = vol, deltaReferencia = delta, premioReferencia = preco_ref))
       
     } else {
       stop("Erro ao inserir histórico de opções de ações.")
@@ -608,4 +608,32 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
   
 }
 
+company_insert_handler <- function(fname, data_ref, dest_dir) {
+  
+  fname <- paste(dest_dir, "/", fname, sep="")
+  
+  if (file.exists(fname)) {
+    # Ler arquivo de output do scrapper ruby
+    # inserir no banco de dados SQL, atualizando ação
+    
+    # EXEMPLO: 
+    empresas <- data.frame(nome = c('Teste', 'Teste2'), cnpj = c(1234, 12345), setores = c('Testes;Testes', 'Testes'), 
+                          atividade_principal = c('Testar;Testar;Testar', 'Exemplificar'), 
+                          site = c('www.teste.com.br', 'www.exemplo.com.br'), ticker = c('ABEV3', 'PETR3'))
+    stocks <- list_stocks()
+    
+    dbWriteTable(DB_CONNECTION, 'empresa', empresas %>% select(cnpj, nome, setores, atividade_princiapl, site), append = T, row.names = F)
+    
+    dbBegin(DB_CONNECTION)
+    r <- lapply(seq(1, nrow(empresas)), function(idx) {
+      cnpj_empresa <- (empresas[idx, ])$cnpj[1]
+      stock_id <- (stocks[stocks$ticker == empresa$ticker, ])$id[1]
+      dbSendQuery(DB_CONNECTION, glue('UPDATE acao SET cnpj_empresa = {cnpj_empresa} WHERE id_instrumento = {stock_id}'))
+    })
+    RPostgreSQL::dbCommit(DB_CONNECTION)
+    
+  } else {
+    stop("Dados de empresas não encontrados")
+  }
+}
 

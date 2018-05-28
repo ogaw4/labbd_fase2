@@ -89,3 +89,13 @@ list_index <- function() {
                "FROM indice as a, instrumento as i", 
                "WHERE a.id_instrumento = i.id"))
 }
+
+list_companies <- function() {
+  dbGetQuery(DB_CONNECTION, 
+             paste(
+               "SELECT e.cnpj as cnpj, e.nome as name, e.setores as sectors, e.atividade_principal as actv, e.site as site, i.codigo as ticker",
+               "FROM empresa as e, instrumento as i, acao as a", 
+               "WHERE e.cnpj = a.cnpj_empresa", 
+               "AND a.id_instrumento = i.id"
+             ))
+}

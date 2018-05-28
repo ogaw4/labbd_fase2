@@ -157,9 +157,9 @@ gen_candle_plot <- function(dd, title, instr_type) {
     ylab('Valor')
   
   if (do_volumes) plt <- plt + geom_rect(aes(xmin = Data - width/2 * 0.9, xmax = Data + width/2 * 0.9, 
-                                             ymin = lower_bound, ymax = lower_bound + (volumeNegociado - min_vol) * vol_normalizer,
-                                             fill = change), 
-                                         alpha = 0.5) 
+                                ymin = lower_bound, ymax = lower_bound + (volumeNegociado - min_vol) * vol_normalizer,
+                                fill = change), 
+                            alpha = 0.5) 
   
   if (any(dd$change == "flat")) {
     plt <- plt +
@@ -172,10 +172,10 @@ gen_candle_plot <- function(dd, title, instr_type) {
   if ('Referencia' %in% names(dd)) {
     ref_text <- ifelse(instr_type == 'option', 'Referência', 'Ajuste')
     plt <- suppressWarnings(plt + geom_line(aes(x = Data, y = Referencia), alpha = 0.5, size = 0.5) +
-                              geom_point(aes(x = Data, y = Referencia, 
-                                             text = sprintf('%s: %s', 
-                                                            ref_text, 
-                                                            Referencia)), alpha = 0.5, size = 0.5))
+      geom_point(aes(x = Data, y = Referencia, 
+                                 text = sprintf('%s: %s', 
+                                                ref_text, 
+                                                Referencia)), alpha = 0.5, size = 0.5))
   }
   
   p <- suppressMessages(ggplotly(plt, tooltip = 'text') %>% layout(showlegend = F))
