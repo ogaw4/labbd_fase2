@@ -1,8 +1,25 @@
 
-if (!require(pacman)) install.packages("pacman")
+# if (!require(pacman)) install.packages("pacman")
+# 
+# pacman::p_load(bizdays, utils, httr, lubridate, XML, dplyr, shiny, shinydashboard, ggplot2, 
+#                plotly, RPostgreSQL, yaml, mongolite, reshape2, glue, DT)
 
-pacman::p_load(bizdays, utils, httr, lubridate, XML, dplyr, shiny, shinydashboard, ggplot2, 
-               plotly, RPostgreSQL, yaml, mongolite, reshape2, glue)
+library(bizdays)
+library(utils)
+library(httr)
+library(lubridate)
+library(XML)
+library(dplyr)
+library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(plotly)
+library(RPostgreSQL)
+library(yaml)
+library(mongolite)
+library(reshape2)
+library(glue)
+library(DT)
 
 dir <- "scripts/"
 
@@ -24,19 +41,19 @@ DB_PORT <- 5432
 
 SCHEMA_NAME <- 'mac439_bmfbovespa'
 
-drv <- dbDriver('PostgreSQL')
-DB_CONNECTION <- dbConnect(drv, user = DB_USERNAME, password = DB_PWORD,
-                  host = DB_HOST, port = DB_PORT, dbname = DB_NAME)
-sp <- dbGetQuery(DB_CONNECTION, paste0('set search_path to ', SCHEMA_NAME, ';'))
-
-MONGO_DB_NAME <- 'mac439_bmfbovespa'
-MONGO_DB_URL <- 'mongodb://localhost:27017'
-
-MONGO_STOCKS <- mongo(collection = 'Negociacao_Acao', db = MONGO_DB_NAME,
-                      url = MONGO_DB_URL )
-MONGO_FUTURES <- mongo(collection = 'Negociacao_Futuro', db = MONGO_DB_NAME,
-                       url = MONGO_DB_URL )
-MONGO_OPTIONS <- mongo(collection = 'Negociacao_Opcao', db = MONGO_DB_NAME,
-                       url = MONGO_DB_URL )
-MONGO_INDEXES <- mongo(collection = 'Preco_Indice', db = MONGO_DB_NAME,
-                       url = MONGO_DB_URL )
+# drv <- dbDriver('PostgreSQL')
+# DB_CONNECTION <- dbConnect(drv, user = DB_USERNAME, password = DB_PWORD,
+#                   host = DB_HOST, port = DB_PORT, dbname = DB_NAME)
+# sp <- dbGetQuery(DB_CONNECTION, paste0('set search_path to ', SCHEMA_NAME, ';'))
+# 
+# MONGO_DB_NAME <- 'mac439_bmfbovespa'
+# MONGO_DB_URL <- 'mongodb://localhost:27017'
+# 
+# MONGO_STOCKS <- mongo(collection = 'Negociacao_Acao', db = MONGO_DB_NAME,
+#                       url = MONGO_DB_URL )
+# MONGO_FUTURES <- mongo(collection = 'Negociacao_Futuro', db = MONGO_DB_NAME,
+#                        url = MONGO_DB_URL )
+# MONGO_OPTIONS <- mongo(collection = 'Negociacao_Opcao', db = MONGO_DB_NAME,
+#                        url = MONGO_DB_URL )
+# MONGO_INDEXES <- mongo(collection = 'Preco_Indice', db = MONGO_DB_NAME,
+#                        url = MONGO_DB_URL )

@@ -9,7 +9,8 @@ tagList(
       br(),
       sidebarMenu(
         id = 'tabs', 
-        menuItem('Gráficos', tabName = 'home', icon = icon('stats', lib = 'glyphicon')), 
+        menuItem('Busca', tabName = 'home', icon = icon('search')),
+        menuItem('Gráficos', tabName = 'graphs', icon = icon('stats', lib = 'glyphicon')), 
         menuItem('Inserção de dados', tabName = 'data_update', icon = icon('database'))
       )
     ), 
