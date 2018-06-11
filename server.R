@@ -1,7 +1,8 @@
 
 shinyServer(function(input, output, session) {
   
-  values <- reactiveValues(execution_log = "", update_files = FALSE)
+  values <- reactiveValues(execution_log = "", update_files = FALSE, 
+                           cur_ticker = NULL)
   
   server_env <- environment()
   
