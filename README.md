@@ -4,7 +4,7 @@
 
 Para execução e uso do aplicativo são necessários:
 
-- R versão 3.x
+- R versão 3.4.x ou superior
 - Servidor PostgreSQL
 - Servidor MongoDB
 
