@@ -8,10 +8,11 @@ Para execução e uso do aplicativo são necessários:
 - Servidor PostgreSQL
 - Servidor MongoDB
 
+Além disso, para inserção de dados de empresas é necessária uma instalação do Ruby com as gemas 'net' e 'json'. 
 Antes de utilizar o aplicativo o schema deve ser criado com o script em criacao_sql.sql.
 
-As configurações de conexão aos bancos de dados estão no arquivo global.R. Para execução do aplicativo localmente recomenda-se 
-o uso do RStudio, mas é possível executá-lo por linha de comando com:
+As configurações de conexão aos bancos de dados e o caminho para a instalação do Ruby estão no arquivo global.R. Caso não seja possível ou não queira utilizar o Ruby, é possível alterar a flag USE_SCRAPPER para FALSE fazendo com que o aplicativo insira no banco os dados existentes na pasta raw_data. 
+Para execução do aplicativo localmente recomenda-se o uso do RStudio, mas é possível executá-lo por linha de comando com:
 
 > R -e "shiny::runApp('~/shinyapp')"
 
