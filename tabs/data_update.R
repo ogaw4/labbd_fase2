@@ -22,5 +22,16 @@ tabItem(
   ), 
   fluidRow(
     column(6, htmlOutput('execution_log_corp'))
+  ),
+  fluidRow(
+    column(12, h3('Alteração de dados'))
+  ),
+  fluidRow(
+    column(3, textInput("from_cpy", "Nome da empresa a ser alterada")), 
+    column(3, textInput("to_cpy", "Nome novo")), 
+    column(3, br(), actionButton("run_update_cpy", "Alterar empresa"))
+  ), 
+  fluidRow(
+    column(6, htmlOutput('execution_log_updt'))
   )
 )

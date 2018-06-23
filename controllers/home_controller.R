@@ -1,18 +1,22 @@
 
 
-log.info <- function(msg, src) {
+log.info <- function(msg, src = 'def') {
   if (src == 'neg') {
     values$execution_log_neg <- paste0(values$execution_log_neg, '<br><span style="color:green"> <b>[INFO]</b> ', msg, '</span>')
-  } else {
+  } else if (src == 'corp') {
     values$execution_log_corp <- paste0(values$execution_log_corp, '<br><span style="color:green"> <b>[INFO]</b> ', msg, '</span>')
+  } else {
+    values$execution_log_updt <- paste0(values$execution_log_updt, '<br><span style="color:green"> <b>[INFO]</b> ', msg, '</span>')
   }
 }
 
-log.error <- function(msg, src) {
+log.error <- function(msg, src = 'def') {
   if (src == 'neg') {
     values$execution_log_neg <- paste0(values$execution_log_neg, '<br><span style="color:red"> <b>[ERRO]</b> ', msg, '</span>')
-  } else {
+  } else if (src == 'corp') {
     values$execution_log_corp <- paste0(values$execution_log_corp, '<br><span style="color:red"> <b>[ERRO]</b> ', msg, '</span>')
+  } else {
+    values$execution_log_updt <- paste0(values$execution_log_updt, '<br><span style="color:red"> <b>[ERRO]</b> ', msg, '</span>')
   }
 }
 

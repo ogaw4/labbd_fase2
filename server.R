@@ -5,7 +5,8 @@ shinyServer(function(input, output, session) {
                            cur_ticker = NULL, updated_database = FALSE)
   
   
-  obs_list <- list()
+  obs_list <- list() 
+  obs_counter <- 0
   
   observeEvent(input$key_pressed, {
     if (input$key_pressed == 13) {
@@ -46,7 +47,6 @@ shinyServer(function(input, output, session) {
       wanted <- instrument_list %>% 
         filter(grepl(target_instr, instrument_list$code, ignore.case = T))
       
-      
       if (nrow(wanted) == 0) {
         output$search_result <- renderUI({
           h3(paste0("Nenhum instrumento contendo ", target_instr, " foi encontrado."))
@@ -60,7 +60,8 @@ shinyServer(function(input, output, session) {
           buttons <- lapply(buttons, function(i) {
             cd <- wanted[i, ]$code
             sr <- wanted[i, ]$src
-            nm <- paste0("search_btn_", i)
+            nm <- paste0("search_btn_", i + obs_counter)
+            obs_counter <- obs_counter + 1
             obs_list[[nm]] <<- observeEvent(input[[nm]], {
               updateTextInput(session, 'qsearch_terms', value = paste0(cd))
               updateTabItems(session, "tabs", selected = "graphs")

@@ -47,7 +47,6 @@ observeEvent(input$run_update_corp, {
   dr <- input$dt_range
   values$execution_log_corp <- ""
   
-  values$updated_database <- !values$updated_database
   
   withProgress(message = 'Obtendo dados...', value = 0, {
     n_steps <- 2
@@ -85,4 +84,33 @@ observeEvent(input$run_update_corp, {
 
 output$execution_log_corp <- renderText({
   values$execution_log_corp
+})
+
+
+
+
+
+observeEvent(input$run_update_cpy, {
+  
+  values$execution_log_updt <- ""
+  
+  log.info("Iniciando atualização de empresa...")
+  log.info(paste0("Nome atual: ", input$from_stock))
+  log.info(paste0("Novo Nome: ", input$to_stock))
+  withProgress(message = 'Atualizando dados...', value = 0, {
+    update_company(input$from_cpy, input$to_cpy)
+  })
+  log.info("Dados atualizados.")
+  
+  
+  values$updated_database <- !values$updated_database
+  
+  return()
+  
+})
+
+
+
+output$execution_log_updt <- renderText({
+  values$execution_log_updt 
 })
