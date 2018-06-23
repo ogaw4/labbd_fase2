@@ -7,6 +7,43 @@ gen_main_plot <- function(instr, src, dr, plot_type) {
          future = {gen_future_plot(instr, dr, plot_type)})
 }
 
+gen_balance_plot <- function(cnpj, name) {
+  reports <- get_company_report(cnpj) 
+  dt <- reports$report_date
+  balance <- reports$balance
+  
+  .df <- data.frame(`Valor` = c(balance$ativo_total, balance$ativo_imobilizado, balance$patrimonio_liquido), 
+                    `Tipo` = c("Ativo total", "Ativo Imobilizado", "Patrimônio Líquido"))
+  
+  colours <- ifelse(.df$Valor < 0, 'rgba(222, 45, 38, 0.9)', 'rgba(51, 204, 51, 0.9)')
+  
+  p <- plot_ly(.df, y = ~`Valor`, x = ~Tipo, type = 'bar', marker = list(color = colours)) %>% 
+    plotly::layout(title = paste0("Balanço Patrimonial - ", name, " - ", as.character(dt)))
+  
+  p$elementId <- NULL
+  p
+  
+}
+
+gen_capital_plot <- function(cnpj, name) {
+  reports <- get_company_report(cnpj) 
+  
+  dt <- reports$report_date
+  capital <- reports$capital
+  
+  .df <- data.frame(Quantidade = c(capital$ordinario, capital$preferencial), Tipo = c("Ordinário", "Preferencial"))
+  
+  p <- plot_ly(.df, labels=~Tipo, values=~Quantidade, type = 'pie', 
+               marker = list(colors = c('rgb(255, 204, 102)', 'rgb(51, 153, 255)')),
+               textposition = 'inside', 
+               textinfo = 'label+percent') %>% 
+    plotly::layout(title = paste0("Composição do Capital Acionário - ", name, " - ", as.character(dt)))
+  
+  p$elementId <- NULL
+  p
+  
+}
+
 
 gen_index_plot <- function(instr, dr, plot_type) {
   

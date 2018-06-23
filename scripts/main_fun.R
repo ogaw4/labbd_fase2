@@ -25,3 +25,13 @@ insert_data <- function(d_dir, ref_date) {
   bvbgopc_insert_handler(c("BVBG.028.xml", "BVBG.086.xml", "PE.txt"), ref_date, d_dir)
   
 }
+
+
+format_cnpj <- function(cnpj) {
+  cnpj <- as.character(cnpj) 
+  paste0(substr(cnpj, 1, 2), ".", 
+         substr(cnpj, 3, 5), ".", 
+         substr(cnpj, 6, 9), "/", 
+         substr(cnpj, 10, 13), "-", 
+         substr(cnpj, 14, 15))
+}

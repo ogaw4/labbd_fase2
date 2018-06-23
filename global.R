@@ -2,7 +2,7 @@
 if (!require(pacman)) install.packages("pacman")
 
 pacman::p_load(bizdays, utils, httr, lubridate, XML, dplyr, shiny, shinydashboard, ggplot2, 
-               plotly, RPostgreSQL, yaml, mongolite, reshape2, glue, DT)
+               plotly, RPostgreSQL, yaml, mongolite, reshape2, glue, DT, jsonlite, stringr)
 
 dir <- "scripts/"
 
@@ -16,13 +16,13 @@ bizdays.options$set(default.calendar = "Brazil/ANBIMA")
 dest_dir <- "raw_data/"
 if (!dir.exists(dest_dir)) dir.create(dest_dir)
 
-RUBY_PATH <- "../ruby.exe"
-USE_SCRAPPER <- TRUE
+RUBY_PATH <- "D:/Ruby24-x64/bin/ruby.exe"
+USE_SCRAPPER <- FALSE
 
-DB_USERNAME <- '<user>'
-DB_PWORD <- '<pass>'
+DB_USERNAME <- 'postgres'
+DB_PWORD <- 'mine'
 DB_HOST <- 'localhost'
-DB_NAME <- '<database>'
+DB_NAME <- 'ogawa'
 DB_PORT <- 5432
 
 SCHEMA_NAME <- 'mac439_bmfbovespa'

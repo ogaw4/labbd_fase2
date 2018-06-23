@@ -34,5 +34,9 @@ tagList(
               color: white;
               padding: 10px;
               background-color: black;
-              z-index: 1000;")
+              z-index: 1000;"), 
+  tags$script('$(document).on("keydown", function (e) {
+                  Shiny.onInputChange("key_pressed", e.keyCode);
+              });
+              ')
 )

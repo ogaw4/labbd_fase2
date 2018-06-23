@@ -16,14 +16,20 @@ log.error <- function(msg, src) {
   }
 }
 
-# TODO: adicionar dados de empresas e outras colunas (empresa, area...)
 all_instr_list <- reactive({
   change <- values$updated_database
   
   instrument_list <- stocks_list() %>% select(code = ticker, src) %>%
     rbind(opts_list() %>% select(code, src)) %>%
     rbind(futs_list() %>% select(code, src)) %>% 
-    rbind(idx_list() %>% select(code, src))
+    rbind(idx_list() %>% select(code, src)) %>% 
+    rbind(companies_list() %>% select(code = name, src) %>% group_by(code) %>% summarise(src = first(src)))
+  
+})
+
+companies_list <- reactive({
+  change <- values$updated_database
+  list_companies() %>% mutate(src = 'company') 
 })
 
 stocks_list <- reactive({
@@ -46,52 +52,6 @@ idx_list <- reactive({
   list_index() %>% mutate(src = 'index') 
 })
 
-obs_list <- list()
-
 observeEvent(input$do_search, {
-  withProgress(message = 'Buscando...', value = 0, {
-    target_instr <- input$search_terms
-    instrument_list <- all_instr_list()
-    
-    # TODO: Alterar match parcial para olhar mais colunas (empresa, área...)
-    if (input$search_type == "exact") {
-      wanted <- instrument_list[instrument_list$code == target_instr, ]
-    } else {
-      wanted <- instrument_list %>% 
-        filter(grepl(target_instr, instrument_list$code, ignore.case = T))
-    }
-    
-    if (nrow(wanted) == 0) {
-      output$search_result <- renderUI({
-        h3(paste0("Nenhum instrumento contendo ", target_instr, " foi encontrado."))
-      })
-    } else {
-      
-      
-      output$search_result <- renderUI({
-        dict <- c(stock = "Ação", option = "Opção", future = "Futuro", index = "Índice")
-        buttons <- as.list(1:nrow(wanted))
-        buttons <- lapply(buttons, function(i) {
-          cd <- wanted[i, ]$code
-          sr <- wanted[i, ]$src
-          nm <- paste0("search_btn_", i)
-          obs_list[[nm]] <<- observeEvent(input[[nm]], {
-            values$ticker_src <- sr
-            values$cur_ticker <- cd
-            updateTabItems(session, "tabs", selected = "graphs")
-          })
-          
-          div(style = "margin-top:1em", 
-            fluidRow(
-              column(3, span(style = "color:rgb(66, 134, 244); font-size: 150%;", cd)), 
-              column(3, span(style = "color:rgb(66, 134, 244); font-size: 150%;", dict[sr])),
-              column(2, actionButton(nm, "Ver Dados"))
-            )
-          )
-        })
-      })
-      
-    }
-  })
-  
+  search_instr_home()
 })

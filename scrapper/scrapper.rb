@@ -192,3 +192,25 @@ class ScrapeCompanys
 		cvms
 	end
 end
+
+
+
+
+scrap = ScrapeCompanys.new()
+
+cvms = scrap.get_cvms()
+
+cvms.each do |cvm|
+	data = scrap.get_company_data(cvm)	
+	if not data.nil?
+		nm = data[:nome].gsub("/", "")
+		File.open("./raw_data/company/" + nm + "_data.json", "w") do |f|
+	  		f.write(data.to_json)
+		end
+	end
+
+end
+
+f = File.open("./done.txt", "w")
+f.write("done")
+f.close()

@@ -608,32 +608,97 @@ bvbgopc_insert_handler <- function(fnames, data_ref, dest_dir) {
   
 }
 
-company_insert_handler <- function(fname, data_ref, dest_dir) {
+fix_number <- function(n) {
   
-  fname <- paste(dest_dir, "/", fname, sep="")
+  n1 <- str_replace_all(str_replace_all(n, "\\.|>|<", ""), ",", ".")
   
-  if (file.exists(fname)) {
-    # Ler arquivo de output do scrapper ruby
-    # inserir no banco de dados SQL, atualizando ação
+  sig <- 1 
+  
+  if (any(unlist(str_detect(n1, "\\(|\\)")))) sig <- -1 
+  
+  sig * as.numeric(str_replace_all(n1, "\\(|\\)", ""))
+}
+
+company_insert <- function() {
+  
+  company_dir <- file.path(dest_dir, 'company') 
+  
+  json_files <- list.files(company_dir, full.names = T) 
+  stocks_list <- list_stocks() 
+  
+  if (length(json_files) == 0) stop("Dados de empresas não encontrados") 
+  
+  dbBegin(DB_CONNECTION)
+  companies <- lapply(json_files, function(fname) {
     
-    # EXEMPLO: 
-    empresas <- data.frame(nome = c('Teste', 'Teste2'), cnpj = c(1234, 12345), setores = c('Testes;Testes', 'Testes'), 
-                          atividade_principal = c('Testar;Testar;Testar', 'Exemplificar'), 
-                          site = c('www.teste.com.br', 'www.exemplo.com.br'), ticker = c('ABEV3', 'PETR3'))
-    stocks <- list_stocks()
+    comp_data <- tryCatch( { read_json(fname) }, error = function(e) NULL)
+    if (is.null(comp_data) || nchar(comp_data$cnpj) <= 5) {NULL} else {
+      name <- comp_data$nome 
+      site <- comp_data$site
+      cnpj <- as.numeric(str_remove_all(comp_data$cnpj, "\\.|/|-"))
+      setores <- "Indisponivel"
+      atividade_principal <- "Indisponiivel"
+      tickers <- unlist(comp_data$ticker)
+      
+      base_query <- paste("INSERT INTO empresa (cnpj, nome, setores, atividade_principal, site)",
+                    "VALUES ({cnpj}, '{name}', '{setores}', '{atividade_principal}', '{site}') ON CONFLICT (cnpj) DO UPDATE", 
+                    "SET nome = EXCLUDED.nome, setores = EXCLUDED.setores, atividade_principal = EXCLUDED.atividade_principal,",
+                    "site = EXCLUDED.site;")
+      
+      res <- dbSendQuery(DB_CONNECTION, glue(base_query))
+      
+      
+      if (!is.null(tickers))  {
+        for (t in tickers) {
+          if (t %in% stocks_list$ticker) {
+            stock_id <- first((stocks_list %>% filter(ticker == t))$id)
+            res <- dbSendQuery(DB_CONNECTION, glue('UPDATE acao SET cnpj_empresa = {cnpj} WHERE id_instrumento = {stock_id}'))
+          }
+        }
+      }
+      
+      
+      balanco <- comp_data$balanco_patrimonial
+      composicao <- comp_data$composicao_capital_social
+      
+      if (length(balanco$periodo > 0)) {
+        res <- dbSendQuery(DB_CONNECTION, glue('INSERT INTO relatorio (cnpj_empresa) VALUES ({cnpj});'))
+        rid <- first(dbGetQuery(DB_CONNECTION, glue('SELECT * FROM relatorio WHERE cnpj_empresa = {cnpj} ORDER BY id DESC LIMIT 1;'))$id)
+        
+        dt <- as.Date(str_replace_all(balanco$periodo[2], ">|<", ""), format = "%d/%m/%Y")
+        
+        if (is.na(dt)) browser()
+        
+        
+        res <- dbSendQuery(DB_CONNECTION, glue("INSERT INTO relatorio_financeiro (id_relatorio, data) VALUES ({rid}, '{dt}');"))
+        
+        perm <- fix_number(balanco$ativo_permanente[2])
+        tot <- fix_number(balanco$ativo_total[2])
+        liq <- fix_number(balanco$patromonio_liquido[2])
+        on <- fix_number(composicao$ordinarias[1])
+        pn <- fix_number(composicao$preferenciais[1])
+        
+        if (length(perm) == 0 || is.na(perm)) perm <- 0
+        if (length(tot) == 0 || is.na(tot)) tot <- 0
+        if (length(liq) == 0 || is.na(liq)) liq <- 0
+        if (length(on) == 0 || is.na(on)) on <- 0
+        if (length(pn) == 0 || is.na(pn)) pn <- 0
+        
+        
+        
+        res <- dbSendQuery(DB_CONNECTION, glue("INSERT INTO balanco_patrimonial (id_relatorio, ativo_total, ativo_imobilizado, patrimonio_atribuido, patrimonio_liquido) VALUES ({rid}, {tot}, {perm}, 0, {liq});"))
+        
+        res <- dbSendQuery(DB_CONNECTION, glue("INSERT INTO capital_social (id_relatorio, ordinario, preferencial) VALUES ({rid}, {on}, {pn});"))
+        
+        
+      }
     
-    dbWriteTable(DB_CONNECTION, 'empresa', empresas %>% select(cnpj, nome, setores, atividade_princiapl, site), append = T, row.names = F)
+    }
     
-    dbBegin(DB_CONNECTION)
-    r <- lapply(seq(1, nrow(empresas)), function(idx) {
-      cnpj_empresa <- (empresas[idx, ])$cnpj[1]
-      stock_id <- (stocks[stocks$ticker == empresa$ticker, ])$id[1]
-      dbSendQuery(DB_CONNECTION, glue('UPDATE acao SET cnpj_empresa = {cnpj_empresa} WHERE id_instrumento = {stock_id}'))
-    })
-    RPostgreSQL::dbCommit(DB_CONNECTION)
     
-  } else {
-    stop("Dados de empresas não encontrados")
-  }
+  })
+  
+  dbCommit(DB_CONNECTION)
+  
 }
 

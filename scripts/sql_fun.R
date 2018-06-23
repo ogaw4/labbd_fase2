@@ -1,4 +1,19 @@
 
+
+get_company_report <- function(cnpj) {
+  
+  rid <- first(dbGetQuery(DB_CONNECTION, glue('SELECT * FROM relatorio WHERE cnpj_empresa = {cnpj} ORDER BY id DESC LIMIT 1;'))$id)
+  
+  dt <- first(dbGetQuery(DB_CONNECTION, glue('SELECT * FROM relatorio_financeiro WHERE id_relatorio = {rid};'))$data)
+  
+  balance <- dbGetQuery(DB_CONNECTION, glue('SELECT * FROM balanco_patrimonial WHERE id_relatorio = {rid};'))
+  capital <- dbGetQuery(DB_CONNECTION, glue('SELECT * FROM capital_social WHERE id_relatorio = {rid};'))
+  
+  list(report_date = dt, balance = balance, capital = capital)
+  
+}
+
+
 list_stocks <- function() {
   stocks <- dbGetQuery(DB_CONNECTION, 
                paste(

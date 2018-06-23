@@ -1,3 +1,25 @@
+company_download <- function() {
+  company_dir <- file.path(dest_dir, 'company') 
+  
+  done <- "./done.txt"
+  timeout <- 300
+  cur_time <- 0
+  if (file.exists(done)) unlink(done, force = T) 
+  
+  shell(paste0(RUBY_PATH, " scrapper/scrapper.rb")) 
+  
+  while (cur_time < timeout && !file.exists(done)) { 
+    cur_time <- cur_time + 1
+    Sys.sleep(1) 
+  }
+  
+  if (cur_time >= timeout) { 
+    stop("Timeout tentando baixar dados de empresas.")
+  }
+  
+  company_dir
+}
+
 
 b3_download_handler <- function(urlfname, fname, data_ref, dest_dir) {
   mapply(function(url_fname, fname) {

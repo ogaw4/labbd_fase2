@@ -18,7 +18,7 @@ CREATE TABLE instrumento
 CREATE TABLE acao
 (
 	id_instrumento int PRIMARY KEY REFERENCES instrumento(id) ON DELETE CASCADE,
-	cnpj_empresa int REFERENCES empresa(cnpj) ON DELETE SET NULL,
+	cnpj_empresa numeric REFERENCES empresa(cnpj) ON DELETE SET NULL,
 	tipo char(2) NOT NULL CHECK (tipo = 'PN' OR tipo = 'ON')
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE mercadoria (
 -- acidentalmente ao remover uma empresa.
 CREATE TABLE relatorio (
     id serial PRIMARY KEY,
-    cnpj_empresa int REFERENCES empresa(cnpj) ON DELETE NO ACTION ON UPDATE CASCADE
+    cnpj_empresa numeric REFERENCES empresa(cnpj) ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
 CREATE TABLE relatorio_consolidado (
