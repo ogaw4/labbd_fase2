@@ -16,13 +16,13 @@ bizdays.options$set(default.calendar = "Brazil/ANBIMA")
 dest_dir <- "raw_data/"
 if (!dir.exists(dest_dir)) dir.create(dest_dir)
 
-RUBY_PATH <- "D:/Ruby24-x64/bin/ruby.exe"
+RUBY_PATH <- "..../ruby.exe"
 USE_SCRAPPER <- FALSE
 
-DB_USERNAME <- 'postgres'
-DB_PWORD <- 'mine'
+DB_USERNAME <- '<username>'
+DB_PWORD <- '<password>'
 DB_HOST <- 'localhost'
-DB_NAME <- 'ogawa'
+DB_NAME <- '<dbname>'
 DB_PORT <- 5432
 
 SCHEMA_NAME <- 'mac439_bmfbovespa'
