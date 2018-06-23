@@ -18,15 +18,32 @@ log.error <- function(msg, src) {
 
 # TODO: adicionar dados de empresas e outras colunas (empresa, area...)
 all_instr_list <- reactive({
-  stocks_list <- list_stocks() %>% mutate(src = 'stock')
-  opts_list <- list_options() %>% mutate(src = 'option')
-  futs_list <- list_futures() %>% mutate(src = 'future')
-  idx_list <- list_index() %>% mutate(src = 'index')
+  change <- values$updated_database
   
-  instrument_list <- stocks_list %>% select(code = ticker, src) %>%
-    rbind(opts_list %>% select(code, src)) %>%
-    rbind(futs_list %>% select(code, src)) %>% 
-    rbind(idx_list %>% select(code, src))
+  instrument_list <- stocks_list() %>% select(code = ticker, src) %>%
+    rbind(opts_list() %>% select(code, src)) %>%
+    rbind(futs_list() %>% select(code, src)) %>% 
+    rbind(idx_list() %>% select(code, src))
+})
+
+stocks_list <- reactive({
+  change <- values$updated_database
+  list_stocks() %>% mutate(src = 'stock')
+})
+
+opts_list <- reactive({
+  change <- values$updated_database
+  list_options() %>% mutate(src = 'option')
+})
+
+futs_list <- reactive({
+  change <- values$updated_database
+  list_futures() %>% mutate(src = 'future')
+})
+
+idx_list <- reactive({
+  change <- values$updated_database
+  list_index() %>% mutate(src = 'index') 
 })
 
 obs_list <- list()
@@ -50,7 +67,9 @@ observeEvent(input$do_search, {
       })
     } else {
       
+      
       output$search_result <- renderUI({
+        dict <- c(stock = "Ação", option = "Opção", future = "Futuro", index = "Índice")
         buttons <- as.list(1:nrow(wanted))
         buttons <- lapply(buttons, function(i) {
           cd <- wanted[i, ]$code
@@ -61,9 +80,13 @@ observeEvent(input$do_search, {
             values$cur_ticker <- cd
             updateTabItems(session, "tabs", selected = "graphs")
           })
-          fluidRow(
-            column(6, span(style = "color:blue; font-size: 120%;", cd)), 
-            column(2, actionButton(nm, "Ver Dados"))
+          
+          div(style = "margin-top:1em", 
+            fluidRow(
+              column(3, span(style = "color:rgb(66, 134, 244); font-size: 150%;", cd)), 
+              column(3, span(style = "color:rgb(66, 134, 244); font-size: 150%;", dict[sr])),
+              column(2, actionButton(nm, "Ver Dados"))
+            )
           )
         })
       })

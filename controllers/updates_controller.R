@@ -29,6 +29,7 @@ observeEvent(input$run_update_neg, {
     }
   })
   log.info("Dados atualizados.", 'neg')
+  values$updated_database <- !values$updated_database
   
   return()
   
@@ -47,6 +48,9 @@ observeEvent(input$run_update_corp, {
   values$execution_log_corp <- ""
   log.error("Obtenção de dados de empresas não implementada ainda!", 'corp')
   
+  
+  
+  values$updated_database <- !values$updated_database
   
   # withProgress(message = 'Obtendo dados...', value = 0, {
   #   all_dates <- bizseq(dr[1], dr[2])

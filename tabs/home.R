@@ -7,8 +7,8 @@ tabItem(
   ), 
   fluidRow(
     column(8, textInput('search_terms', label = "", 
-                         placeholder = "Tickers de ações, nomes de empresas, áreas de atuação...",
-                         width = "100%")),
+                        placeholder = "Tickers de ações, nomes de empresas, áreas de atuação...",
+                        width = "100%")),
     column(2, radioButtons('search_type', 'Tipo de busca',
                            choices = list( `Exata` = 'exact',
                                            `Parcial` = 'partial'

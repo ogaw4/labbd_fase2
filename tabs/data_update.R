@@ -15,7 +15,7 @@ tabItem(
     column(6, htmlOutput('execution_log_neg'))
   ),
   fluidRow(
-    column(12, h3('Inserção de dados de empresas (Não implementado!)'))
+    column(12, h3('Inserção de dados de empresas'))
   ),
   fluidRow(
     column(4, actionButton("run_update_corp", "Obter dados e atualizar banco"))
