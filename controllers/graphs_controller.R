@@ -26,8 +26,9 @@ observeEvent(
                        filter = 'none')
           }, 
           future = {
+            browser()
             instr <- futs_list() %>% filter(code == curr_instr)
-            DT::datatable(data.frame(`Código` = instr$code, `Objeto` = instr$objeto, `Vencimento` = instr$maturity_date),
+            DT::datatable(data.frame(`Código` = instr$code, `Objeto` = instr$objeto, `Vencimento` = instr$maturity),
                           editable = F, rownames = F,  options = list(dom = "t"),
                           filter = 'none')
           }, 
@@ -37,7 +38,8 @@ observeEvent(
             editable = F, rownames = F,  options = list(dom = "t"),
             filter = 'none')
           }, 
-          idx = {
+          index = {
+            browser()
             instr <- idx_list() %>% filter(code == curr_instr)
             DT::datatable(data.frame(`Código` = instr$code, `Descrição` = instr$desc),
             editable = F, rownames = F,  options = list(dom = "t"),
@@ -97,7 +99,7 @@ observeEvent(
                             filter = 'none')
             }
           }, 
-          idx = {
+          index = {
             DT::datatable(data.frame(`Vazio` = "Não há dados de empresa associada a índice"),
                           editable = F, rownames = F,  options = list(dom = "t"),
                           filter = 'none')
