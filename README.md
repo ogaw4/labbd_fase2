@@ -1,4 +1,4 @@
-# Dados da B3 - Lab BD 2018 Fase 2
+# Dados da B3 - Lab BD 2018
 
 ## Instruções de uso
 
