@@ -17,16 +17,35 @@ tabItem(
     column(2, br(), actionButton('qsearch', 'Ir'))
   ), 
   fluidRow(
-    column(6, DT::DTOutput('instr_info')), 
-    column(6, DT::DTOutput('company_info'))
+    box(title = "Informações cadastrais", width = 12, collapsible = T, style = 'overflow-x: scroll', 
+        fluidRow(
+          column(6, DT::DTOutput('instr_info')), 
+          column(6, DT::DTOutput('company_info'))
+        )
+    )
   ),
   fluidRow(
-    column(12, br(), br(), plotlyOutput("main_plot", height = "600px"))
+    box(title = "Dados de negociação", width = 12, collapsible = T, 
+        fluidRow(
+          column(12, br(), br(), plotlyOutput("main_plot", height = "600px"))
+        )
+    )
   ), 
   fluidRow(
-    column(12, br(), br(), plotlyOutput("balance_report", height = "400px"))
+    box(title = "Dados de negociação - Underlying", width = 12, collapsible = T, collapsed = T,
+        fluidRow(
+          column(12, br(), br(), plotlyOutput("ulyg_plot", height = "600px"))
+        )
+    )
   ), 
   fluidRow(
-    column(12, br(), br(), plotlyOutput("capital_report", height = "400px"))
-  )
+    box(title = "Relatórios da empresa", width = 12, collapsible = T, 
+        fluidRow(
+          column(12, br(), br(), plotlyOutput("balance_report", height = "400px"))
+        ),
+        fluidRow(
+          column(12, br(), br(), plotlyOutput("capital_report", height = "400px"))
+        )
+    )
+  )  
 )

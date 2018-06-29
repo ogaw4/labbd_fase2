@@ -26,7 +26,6 @@ observeEvent(
                        filter = 'none')
           }, 
           future = {
-            browser()
             instr <- futs_list() %>% filter(code == curr_instr)
             DT::datatable(data.frame(`Código` = instr$code, `Objeto` = instr$objeto, `Vencimento` = instr$maturity),
                           editable = F, rownames = F,  options = list(dom = "t"),
@@ -39,7 +38,6 @@ observeEvent(
             filter = 'none')
           }, 
           index = {
-            browser()
             instr <- idx_list() %>% filter(code == curr_instr)
             DT::datatable(data.frame(`Código` = instr$code, `Descrição` = instr$desc),
             editable = F, rownames = F,  options = list(dom = "t"),
@@ -54,18 +52,22 @@ observeEvent(
         )
       })
       
+      curr_ulyg <- NULL
+      ulyg_src <- NULL
       
       output$company_info <- renderDT({
         switch(
           instr_src, 
           option = {
             instr <- opts_list() %>% filter(code == curr_instr)
-            ulyg <- instr$cod_underlying
-            if (ulyg %in% stocks_list()$ticker) {
+            curr_ulyg <<- instr$cod_underlying
+            ulyg_src <<- "future"
+            if (curr_ulyg %in% stocks_list()$ticker) {
               cmpny <- first((stocks_list() %>% filter(ticker == ulyg))$cnpj)
               c_data <- companies_list() %>% filter(cnpj == cmpny) 
               curr_company <<- cmpny
               cname <<- first(c_data$name)
+              ulyg_src <<- "stock"
               DT::datatable(data.frame(`Empresa` = first(c_data$name), `CNPJ` = format_cnpj(first(c_data$cnpj)), `Setores` = first(c_data$sectors), 
                                        `Atividades` = first(c_data$actv), `Site` = first(c_data$site), `Ações` = paste(c_data$ticker, collapse = ";")),
                             editable = F, rownames = F,  options = list(dom = "t"),
@@ -120,6 +122,13 @@ observeEvent(
       
       output$main_plot <- suppressWarnings(renderPlotly({
         plt <- gen_main_plot(curr_instr, instr_src, dr, input$graph_type)
+        shiny::validate(need(!is.null(plt), 'Não foram encontrados dados para o período e instrumento dados.'))
+        plt
+      }))
+      
+      output$ulyg_plot <- suppressWarnings(renderPlotly({
+        shiny::validate(need(curr_ulyg, "Não foi encontrado um underlying para o instrumento em questão."))
+        plt <- gen_main_plot(curr_ulyg, ulyg_src, dr, input$graph_type)
         shiny::validate(need(!is.null(plt), 'Não foram encontrados dados para o período e instrumento dados.'))
         plt
       }))
