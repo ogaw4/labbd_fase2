@@ -667,8 +667,6 @@ company_insert <- function() {
         
         dt <- as.Date(str_replace_all(balanco$periodo[2], ">|<", ""), format = "%d/%m/%Y")
         
-        if (is.na(dt)) browser()
-        
         
         res <- dbSendQuery(DB_CONNECTION, glue("INSERT INTO relatorio_financeiro (id_relatorio, data) VALUES ({rid}, '{dt}');"))
         

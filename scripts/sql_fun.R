@@ -70,6 +70,7 @@ list_options <- function(maturity_filter = NULL) {
                            'f.strike as strike, f.tipo as type, f.estilo as model',
                            'FROM opcao as f, instrumento as i', 
                           'WHERE f.id_instrumento = i.id')
+  
   if(!is.null(maturity_filter)) original_query <- paste0(original_query, " AND f.vencimento >= '", maturity_filter, "'")
   
   options <- dbGetQuery(DB_CONNECTION, original_query)

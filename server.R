@@ -61,7 +61,7 @@ shinyServer(function(input, output, session) {
             cd <- wanted[i, ]$code
             sr <- wanted[i, ]$src
             nm <- paste0("search_btn_", i + obs_counter)
-            obs_counter <- obs_counter + 1
+            obs_counter <<- obs_counter + 1
             obs_list[[nm]] <<- observeEvent(input[[nm]], {
               updateTextInput(session, 'qsearch_terms', value = paste0(cd))
               updateTabItems(session, "tabs", selected = "graphs")

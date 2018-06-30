@@ -63,7 +63,7 @@ observeEvent(
             curr_ulyg <<- instr$cod_underlying
             ulyg_src <<- "future"
             if (curr_ulyg %in% stocks_list()$ticker) {
-              cmpny <- first((stocks_list() %>% filter(ticker == ulyg))$cnpj)
+              cmpny <- first((stocks_list() %>% filter(ticker == curr_ulyg))$cnpj)
               c_data <- companies_list() %>% filter(cnpj == cmpny) 
               curr_company <<- cmpny
               cname <<- first(c_data$name)
